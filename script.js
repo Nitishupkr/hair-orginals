@@ -1,5 +1,5 @@
 // Configuration - Replace with your actual Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVBe5zREymvjcjaubEsoPeRX_7Mgz9tRzETrsCbPuBhm1yHwFq9OapYijDwyEIvOovPA/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxE57zW3g5EIObV9rIz2Qj9Extb5U3BkhyWXkXH1fg1bvsEK18A3afgW2J7xECFf675iw/exec';
 
 // DOM Elements
 const form = document.getElementById('leadForm');
@@ -212,6 +212,7 @@ function getLocation(e) {
 }
 
 // Handle Form Submission
+// Handle Form Submission
 async function handleFormSubmit(e) {
     e.preventDefault();
     
@@ -219,7 +220,6 @@ async function handleFormSubmit(e) {
     errorMessage.style.display = 'none';
     loadingMessage.style.display = 'none';
     
-    // FIXED: Added pincode and location to validation
     const name = document.getElementById('name').value.trim();
     const mobile = document.getElementById('mobile').value.trim();
     const address = document.getElementById('address').value.trim();
@@ -237,7 +237,7 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    // FIXED: Added pincode validation
+    // Validate pincode
     if (pincode.length !== 6 || !/^[0-9]{6}$/.test(pincode)) {
         showError('Please enter a valid 6-digit pincode');
         return;
@@ -275,7 +275,6 @@ async function handleFormSubmit(e) {
     submitBtn.disabled = true;
     loadingMessage.style.display = 'block';
     
-    // FIXED: Added location field to formData
     const formData = {
         name: name,
         mobile: mobile,
@@ -292,34 +291,32 @@ async function handleFormSubmit(e) {
         utmCampaign: getUrlParameter('utm_campaign') || ''
     };
     
-    try {
-        // Submit to Google Apps Script
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
-        
-        // Parse response
-        const result = await response.json();
-        
-        if (result.success) {
-            // Redirect to thank you page with user's name
-            window.location.href = result.redirectUrl || `thankyou.html?name=${encodeURIComponent(name)}`;
+    // Use XMLHttpRequest instead of fetch to avoid CORS issues
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', GOOGLE_SCRIPT_URL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Success - redirect to thank you page
+            window.location.href = `thankyou.html?name=${encodeURIComponent(formData.name)}`;
         } else {
-            throw new Error(result.message || 'Submission failed');
+            // Error
+            showError('There was an error submitting your request. Please try again.');
+            submitBtn.disabled = false;
+            loadingMessage.style.display = 'none';
         }
-        
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        showError('There was an error submitting your request. Please try again.');
+    };
+    
+    xhr.onerror = function() {
+        // Network error
+        showError('Network error. Please check your connection and try again.');
         submitBtn.disabled = false;
         loadingMessage.style.display = 'none';
-    }
+    };
+    
+    xhr.send(JSON.stringify(formData));
 }
-
 // Utility Functions
 function showError(message) {
     errorMessage.textContent = message;
