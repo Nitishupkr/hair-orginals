@@ -1,5 +1,5 @@
 // Configuration - Replace with your actual Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3q-mlK9enuEf4sGk9GkHNrpN1g7f53qB0AzXdnShZFD6cUrZ_Fzh7Ar0Y1AIPBMecSg/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/library/d/1OyBmb0fGBswjMNfLsiDa4RdGycnPERhHicUSMTPLobL-QleL3w_oo5AA/2';
 
 // DOM Elements
 const form = document.getElementById('leadForm');
