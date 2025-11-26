@@ -29,19 +29,18 @@
             justify-content: center;
         }
 
-        /* MAIN WHITE CARD REMOVED → FULL SCREEN LIKE PROVIDED DESIGN */
         .thankyou-container {
             max-width: 600px;
             width: 100%;
         }
 
-        /* LOGO */
+
         .logo img {
             width: 190px;
             margin: 0 auto 20px;
         }
 
-        /* TAGLINE */
+  
         .tagline {
             font-family: "Edu NSW ACT Cursive", cursive !important;
             font-size: 26px;
@@ -49,7 +48,7 @@
             margin-bottom: 50px;
         }
 
-        /* TICK BADGE */
+   
         .tick-wrapper {
             width: 150px;
             margin: 0 auto 40px;
@@ -58,7 +57,7 @@
             width: 100%;
         }
 
-        /* HEADINGS */
+
         h2 {
             font-size: 32px;
             font-weight: 700;
@@ -70,7 +69,6 @@
             font-weight: 700;
         }
 
-        /* TEXT LINES */
         .text-line {
             font-size: 20px;
             margin: 12px 0;
@@ -81,7 +79,6 @@
             font-weight: 700;
         }
 
-        /* CONTACT */
         .contact {
             margin-top: 40px;
             font-size: 19px;
@@ -93,7 +90,6 @@
             color: #000;
         }
 
-        /* RESPONSIVE */
         @media (max-width:480px){
             .tagline{font-size:22px;}
             h2{font-size:26px;}
@@ -107,34 +103,27 @@
 
     <div class="thankyou-container">
 
-        <!-- LOGO -->
         <div class="logo">
             <img src="https://res.cloudinary.com/dwxxuolek/image/upload/v1764143379/Screenshot_2025-11-26_at_1.15.21_PM-removebg-preview_gxyu1q.png" alt="Hair Originals Logo">
         </div>
 
-        <!-- TAGLINE -->
         <p class="tagline">We don’t sell hair, we restore confidence</p>
 
-        <!-- SUCCESS TICK -->
         <div class="tick-wrapper">
             <img src="https://res.cloudinary.com/dwxxuolek/image/upload/v1764158353/Screenshot_2025-11-26_at_5.28.05_PM-removebg-preview_efcwtb.png" alt="Success">
         </div>
 
-        <!-- TITLE -->
         <h2>Thank You<span id="userName" class="user-name"></span>!</h2>
 
-        <!-- SLOT CONFIRMATION -->
         <p class="text-line">
             Your slot for <span class="bold" id="appointmentDate">[Date]</span>
             at <span class="bold" id="appointmentTime">[Time]</span> is confirmed.
         </p>
 
-        <!-- INFO -->
         <p class="text-line">
             Our hair expert will connect with you a few hours prior to guide you through the process.
         </p>
 
-        <!-- CONTACT -->
         <p class="contact">
             For any assistance, reach us at <span class="number">9876543210</span>
         </p>
@@ -142,7 +131,6 @@
     </div>
 
     <script>
-        // Get name & date from URL params
         const params = new URLSearchParams(window.location.search);
         const name = params.get('name');
         const date = params.get('date');
@@ -158,7 +146,6 @@
             document.getElementById('appointmentTime').textContent = time;
         }
 
-        // sessionStorage support (unchanged)
         const submissionData = sessionStorage.getItem('lastSubmission');
         if (submissionData) {
             const saved = JSON.parse(submissionData);

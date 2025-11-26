@@ -11,43 +11,50 @@ const calendarDates = document.getElementById('calendarDates');
 const monthSelect = document.getElementById('month');
 const yearSelect = document.getElementById('year');
 
-// State
 let selectedDate = null;
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     initializeCalendar();
     setupEventListeners();
     
-    // Set default date to November 18, 2025
-    selectedDate = new Date(2025, 10, 18); // Month 10 = November (0-indexed)
+    selectedDate = new Date(2025, 10, 26); // Month 10 = November (0-indexed)
     renderCalendar();
     
-    // Initialize concern collapsible
     initializeConcernCollapsible();
+    
+    // Initial validation check
+    validateForm();
 });
 
-// Setup Event Listeners
 function setupEventListeners() {
-    // Consent checkbox enables/disables submit button
-    consentCheckbox.addEventListener('change', function() {
-        submitBtn.disabled = !this.checked;
+    // Real-time validation on all mandatory fields
+    const mandatoryFields = ['name', 'mobile', 'address', 'pincode', 'location'];
+    mandatoryFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', validateForm);
+            field.addEventListener('blur', validateForm);
+        }
     });
+
+    // Consent checkbox validation
+    consentCheckbox.addEventListener('change', validateForm);
 
     // Form submission
     form.addEventListener('submit', handleFormSubmit);
 
-    // Calendar month/year change
+    // Calendar changes
     monthSelect.addEventListener('change', renderCalendar);
     yearSelect.addEventListener('change', renderCalendar);
 
-    // Phone number validation
+    // Mobile number validation
     const mobileInput = document.getElementById('mobile');
     mobileInput.addEventListener('input', function(e) {
         this.value = this.value.replace(/[^0-9]/g, '');
         if (this.value.length > 10) {
             this.value = this.value.slice(0, 10);
         }
+        validateForm();
     });
 
     // Pincode validation
@@ -57,36 +64,88 @@ function setupEventListeners() {
         if (this.value.length > 6) {
             this.value = this.value.slice(0, 6);
         }
+        validateForm();
     });
 
-    // Location picker - FIXED: Changed from .location-btn to .location-small-btn
+    // Location picker
     const locationBtn = document.querySelector('.location-small-btn');
     if (locationBtn) {
         locationBtn.addEventListener('click', getLocation);
     }
 
-    // Concern checkbox handling
+    // Concern checkboxes
     const concernCheckboxes = document.querySelectorAll('input[name="concern"]');
     concernCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             this.parentElement.classList.toggle('checked', this.checked);
+            validateForm();
         });
     });
 
-    // Time slot handling
+    // Time slots
     const timeSlots = document.querySelectorAll('.time-slot');
     timeSlots.forEach(slot => {
         slot.addEventListener('click', function() {
             timeSlots.forEach(s => s.classList.remove('selected'));
             this.classList.add('selected');
-            // Ensure the radio button is checked
             const radio = this.querySelector('input[type="radio"]');
             if (radio) radio.checked = true;
+            validateForm();
         });
     });
 }
 
-// Initialize Concern Collapsible
+// Validate entire form and enable/disable submit button
+function validateForm() {
+    // Check all mandatory fields
+    const name = document.getElementById('name').value.trim();
+    const mobile = document.getElementById('mobile').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const pincode = document.getElementById('pincode').value.trim();
+    const location = document.getElementById('location').value.trim();
+    
+    // Check mobile number validity (must be exactly 10 digits)
+    const isMobileValid = mobile.length === 10 && /^[0-9]{10}$/.test(mobile);
+    
+    // Check pincode validity (must be exactly 6 digits)
+    const isPincodeValid = pincode.length === 6 && /^[0-9]{6}$/.test(pincode);
+    
+    // Check at least one concern is selected
+    const concernsSelected = document.querySelectorAll('input[name="concern"]:checked').length > 0;
+    
+    // Check date is selected
+    const dateSelected = selectedDate !== null;
+    
+    // Check time slot is selected
+    const timeSlotSelected = document.querySelector('input[name="timeSlot"]:checked') !== null;
+    
+    // Check consent is checked
+    const consentChecked = consentCheckbox.checked;
+    
+    // Enable submit button only if ALL conditions are met
+    const isFormValid = 
+        name && 
+        isMobileValid && 
+        address && 
+        isPincodeValid && 
+        location && 
+        concernsSelected && 
+        dateSelected && 
+        timeSlotSelected && 
+        consentChecked;
+    
+    submitBtn.disabled = !isFormValid;
+    
+    // Optional: Add visual feedback
+    if (isFormValid) {
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+    } else {
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+    }
+}
+
 function initializeConcernCollapsible() {
     const header = document.querySelector(".concern-header");
     const body = document.querySelector(".concern-body");
@@ -94,7 +153,7 @@ function initializeConcernCollapsible() {
 
     if (!header || !body || !arrow) return;
 
-    let isOpen = true; // default OPEN
+    let isOpen = true;
 
     header.addEventListener("click", function () {
         isOpen = !isOpen;
@@ -103,14 +162,11 @@ function initializeConcernCollapsible() {
     });
 }
 
-// Initialize Calendar
 function initializeCalendar() {
-    // Set to November 2025 by default
-    monthSelect.value = 10; // November (0-indexed, so 10 = November)
+    monthSelect.value = 10;
     yearSelect.value = 2025;
 }
 
-// Render Calendar
 function renderCalendar() {
     const month = parseInt(monthSelect.value);
     const year = parseInt(yearSelect.value);
@@ -125,12 +181,10 @@ function renderCalendar() {
     
     let dates = '';
     
-    // Previous month days
     for (let x = firstDayIndex; x > 0; x--) {
         dates += `<div class="calendar-date other-month disabled">${prevLastDay.getDate() - x + 1}</div>`;
     }
     
-    // Current month days
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -147,14 +201,12 @@ function renderCalendar() {
         dates += `<div class="${className}" data-date="${i}" data-month="${month}" data-year="${year}">${i}</div>`;
     }
     
-    // Next month days
     for (let j = 1; j <= nextDays; j++) {
         dates += `<div class="calendar-date other-month disabled">${j}</div>`;
     }
     
     calendarDates.innerHTML = dates;
     
-    // Add click listeners to dates
     document.querySelectorAll('.calendar-date:not(.disabled)').forEach(dateEl => {
         dateEl.addEventListener('click', function() {
             document.querySelectorAll('.calendar-date').forEach(d => d.classList.remove('selected'));
@@ -164,11 +216,13 @@ function renderCalendar() {
             const month = parseInt(this.dataset.month);
             const year = parseInt(this.dataset.year);
             selectedDate = new Date(year, month, day);
+            
+            // Revalidate form when date is selected
+            validateForm();
         });
     });
 }
 
-// Get User Location
 function getLocation(e) {
     e.preventDefault();
     
@@ -178,8 +232,6 @@ function getLocation(e) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 
-                // You can integrate a reverse geocoding API here
-                // For now, we'll use a free service
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
                     .then(response => response.json())
                     .then(data => {
@@ -195,6 +247,9 @@ function getLocation(e) {
                                 cityInput.value = data.address.city || data.address.town || data.address.village;
                             }
                             locationInput.value = data.display_name || '';
+                            
+                            // Revalidate after location is filled
+                            validateForm();
                         }
                     })
                     .catch(error => {
@@ -211,12 +266,9 @@ function getLocation(e) {
     }
 }
 
-// Handle Form Submission
-// Handle Form Submission
 async function handleFormSubmit(e) {
     e.preventDefault();
     
-    // Hide previous messages
     errorMessage.style.display = 'none';
     loadingMessage.style.display = 'none';
     
@@ -231,19 +283,16 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    // Validate mobile number
     if (mobile.length !== 10 || !/^[0-9]{10}$/.test(mobile)) {
         showError('Please enter a valid 10-digit mobile number');
         return;
     }
     
-    // Validate pincode
     if (pincode.length !== 6 || !/^[0-9]{6}$/.test(pincode)) {
         showError('Please enter a valid 6-digit pincode');
         return;
     }
     
-    // Validate concerns (at least one must be selected)
     const concerns = Array.from(document.querySelectorAll('input[name="concern"]:checked'))
         .map(cb => cb.value);
     
@@ -252,26 +301,22 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    // Validate date
     if (!selectedDate) {
         showError('Please select a date for the home trial');
         return;
     }
     
-    // Validate time slot
     const timeSlot = document.querySelector('input[name="timeSlot"]:checked');
     if (!timeSlot) {
         showError('Please select a time slot');
         return;
     }
     
-    // Validate consent
     if (!consentCheckbox.checked) {
         showError('Please accept the consent to proceed');
         return;
     }
     
-    // Disable submit button and show loading
     submitBtn.disabled = true;
     loadingMessage.style.display = 'block';
     
@@ -291,18 +336,14 @@ async function handleFormSubmit(e) {
         utmCampaign: getUrlParameter('utm_campaign') || ''
     };
     
-    // Use XMLHttpRequest instead of fetch to avoid CORS issues
     const xhr = new XMLHttpRequest();
     xhr.open('POST', GOOGLE_SCRIPT_URL, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     
     xhr.onload = function() {
         if (xhr.status === 200) {
-            // Success - redirect to thank you page
-window.location.href = 
-    `thankyou.html?name=${encodeURIComponent(formData.name)}&date=${encodeURIComponent(formData.appointmentDate)}&time=${encodeURIComponent(formData.timeSlot)}`;
+            window.location.href = `thankyou.html?name=${encodeURIComponent(formData.name)}&date=${encodeURIComponent(formData.appointmentDate)}&time=${encodeURIComponent(formData.timeSlot)}`;
         } else {
-            // Error
             showError('There was an error submitting your request. Please try again.');
             submitBtn.disabled = false;
             loadingMessage.style.display = 'none';
@@ -310,7 +351,6 @@ window.location.href =
     };
     
     xhr.onerror = function() {
-        // Network error
         showError('Network error. Please check your connection and try again.');
         submitBtn.disabled = false;
         loadingMessage.style.display = 'none';
@@ -318,15 +358,13 @@ window.location.href =
     
     xhr.send(JSON.stringify(formData));
 }
-// Utility Functions
+
 function showError(message) {
     errorMessage.textContent = message;
     errorMessage.style.display = 'block';
     
-    // Scroll to error message
     errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     
-    // Auto-hide after 5 seconds
     setTimeout(() => {
         errorMessage.style.display = 'none';
     }, 5000);

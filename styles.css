@@ -10,7 +10,13 @@ body {
     color: #333;
     line-height: 1.6;
 }
-
+.location-small-btn {
+        background: #B87453;
+        border:none;
+        padding:5px;
+        color:white;
+        border-radius: 10px;
+}
 .container {
     max-width: 1200px;
     margin: 0 auto;
