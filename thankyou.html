@@ -4,297 +4,169 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You - Hair Originals</title>
+
+    <!-- FONTS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Cursive:wght@400..700&family=Space+Grotesk:wght@300..700&display=swap');
+    </style>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: "Space Grotesk", sans-serif !important;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #FAF0E6 0%, #f5e6d3 100%);
+            background: linear-gradient(180deg, #FFF7EF 0%, #E9A880 100%);
             min-height: 100vh;
+            padding: 40px 20px;
+            text-align: center;
+            color: #333;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
         }
 
+        /* MAIN WHITE CARD REMOVED → FULL SCREEN LIKE PROVIDED DESIGN */
         .thankyou-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            padding: 60px 40px;
-            text-align: center;
             max-width: 600px;
             width: 100%;
         }
 
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-            animation: scaleIn 0.5s ease-out;
+        /* LOGO */
+        .logo img {
+            width: 190px;
+            margin: 0 auto 20px;
         }
 
-        .success-icon svg {
-            width: 50px;
-            height: 50px;
-            stroke: white;
-            stroke-width: 3;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
-            animation: checkmark 0.5s ease-out 0.3s forwards;
-            stroke-dasharray: 100;
-            stroke-dashoffset: 100;
+        /* TAGLINE */
+        .tagline {
+            font-family: "Edu NSW ACT Cursive", cursive !important;
+            font-size: 26px;
+            color: #B87453;
+            margin-bottom: 50px;
         }
 
-        @keyframes scaleIn {
-            from {
-                transform: scale(0);
-            }
-            to {
-                transform: scale(1);
-            }
+        /* TICK BADGE */
+        .tick-wrapper {
+            width: 150px;
+            margin: 0 auto 40px;
+        }
+        .tick-wrapper img {
+            width: 100%;
         }
 
-        @keyframes checkmark {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        .logo {
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            font-size: 36px;
-            font-weight: 400;
-            color: #333;
-        }
-
-        .logo .originals {
-            font-family: 'Brush Script MT', cursive;
-            font-style: italic;
-            font-weight: 300;
-        }
-
+        /* HEADINGS */
         h2 {
             font-size: 32px;
-            color: #333;
-            margin-bottom: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
         }
 
         .user-name {
-            color: #B87453;
-            font-weight: bold;
+            color: #000;
+            font-weight: 700;
         }
 
-        .message {
-            font-size: 18px;
-            color: #666;
+        /* TEXT LINES */
+        .text-line {
+            font-size: 20px;
+            margin: 12px 0;
             line-height: 1.6;
-            margin-bottom: 30px;
         }
 
-        .details-box {
-            background-color: #FAF0E6;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 30px 0;
-            text-align: left;
+        .bold {
+            font-weight: 700;
         }
 
-        .details-box h3 {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0d4c4;
-        }
-
-        .detail-item:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #666;
-        }
-
-        .detail-value {
-            color: #333;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: #B87453;
-            color: white;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #a56343;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(184, 116, 83, 0.3);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: #B87453;
-            border: 2px solid #B87453;
-        }
-
-        .btn-secondary:hover {
-            background-color: #B87453;
-            color: white;
-        }
-
-        .contact-info {
+        /* CONTACT */
+        .contact {
             margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #e0d4c4;
+            font-size: 19px;
+            font-weight: 600;
         }
 
-        .contact-info p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 10px;
+        .number {
+            font-weight: 800;
+            color: #000;
         }
 
-        .phone-number {
-            font-size: 20px;
-            color: #B87453;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        @media (max-width: 480px) {
-            .thankyou-container {
-                padding: 40px 25px;
-            }
-
-            h2 {
-                font-size: 24px;
-            }
-
-            .message {
-                font-size: 16px;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
+        /* RESPONSIVE */
+        @media (max-width:480px){
+            .tagline{font-size:22px;}
+            h2{font-size:26px;}
+            .text-line{font-size:17px;}
+            .tick-wrapper{width:120px;}
         }
     </style>
 </head>
+
 <body>
+
     <div class="thankyou-container">
-        <div class="success-icon">
-            <svg viewBox="0 0 52 52">
-                <polyline points="14 27 22 35 38 19"/>
-            </svg>
-        </div>
 
+        <!-- LOGO -->
         <div class="logo">
-            <h1>HAIR<span class="originals">originals</span></h1>
+            <img src="https://res.cloudinary.com/dwxxuolek/image/upload/v1764143379/Screenshot_2025-11-26_at_1.15.21_PM-removebg-preview_gxyu1q.png" alt="Hair Originals Logo">
         </div>
 
+        <!-- TAGLINE -->
+        <p class="tagline">We don’t sell hair, we restore confidence</p>
+
+        <!-- SUCCESS TICK -->
+        <div class="tick-wrapper">
+            <img src="https://res.cloudinary.com/dwxxuolek/image/upload/v1764158353/Screenshot_2025-11-26_at_5.28.05_PM-removebg-preview_efcwtb.png" alt="Success">
+        </div>
+
+        <!-- TITLE -->
         <h2>Thank You<span id="userName" class="user-name"></span>!</h2>
 
-        <p class="message">
-            Your home trial request has been successfully submitted. We're excited to help you achieve your dream hair!
+        <!-- SLOT CONFIRMATION -->
+        <p class="text-line">
+            Your slot for <span class="bold" id="appointmentDate">[Date]</span>
+            at <span class="bold" id="appointmentTime">[Time]</span> is confirmed.
         </p>
 
-        <div class="details-box">
-            <h3>What's Next?</h3>
-            <div class="detail-item">
-                <span class="detail-label">📞 Confirmation Call</span>
-                <span class="detail-value">Within 24 hours</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">🏠 Home Visit</span>
-                <span class="detail-value" id="appointmentDate">As scheduled</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">💰 Trial Fee</span>
-                <span class="detail-value">₹99 only</span>
-            </div>
-        </div>
-
-        <p class="message">
-            Our hair expert will visit you at your scheduled time for a personalized consultation and trial.
+        <!-- INFO -->
+        <p class="text-line">
+            Our hair expert will connect with you a few hours prior to guide you through the process.
         </p>
 
-        <div class="buttons">
-            <a href="index.html" class="btn btn-secondary">Book Another Trial</a>
-            <a href="tel:+911234567890" class="btn btn-primary">Call Us Now</a>
-        </div>
+        <!-- CONTACT -->
+        <p class="contact">
+            For any assistance, reach us at <span class="number">9876543210</span>
+        </p>
 
-        <div class="contact-info">
-            <p>Need to make changes or have questions?</p>
-            <p class="phone-number">📞 +91 123-456-7890</p>
-            <p>Mon - Sat: 9:00 AM - 7:00 PM</p>
-        </div>
     </div>
 
     <script>
-        // Get name from URL parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
-        const date = urlParams.get('date');
-        
+        // Get name & date from URL params
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
+        const date = params.get('date');
+        const time = params.get('time');
+
         if (name) {
             document.getElementById('userName').textContent = ', ' + name;
         }
-        
         if (date) {
             document.getElementById('appointmentDate').textContent = date;
         }
+        if (time) {
+            document.getElementById('appointmentTime').textContent = time;
+        }
 
-        // Optional: Store submission data in sessionStorage for reference
+        // sessionStorage support (unchanged)
         const submissionData = sessionStorage.getItem('lastSubmission');
         if (submissionData) {
-            const data = JSON.parse(submissionData);
-            if (data.appointmentDate) {
-                document.getElementById('appointmentDate').textContent = data.appointmentDate;
+            const saved = JSON.parse(submissionData);
+            if (saved.appointmentDate) {
+                document.getElementById('appointmentDate').textContent = saved.appointmentDate;
             }
         }
     </script>
+
 </body>
 </html>
