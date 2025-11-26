@@ -299,7 +299,8 @@ async function handleFormSubmit(e) {
     xhr.onload = function() {
         if (xhr.status === 200) {
             // Success - redirect to thank you page
-            window.location.href = `thankyou.html?name=${encodeURIComponent(formData.name)}`;
+window.location.href = 
+    `thankyou.html?name=${encodeURIComponent(formData.name)}&date=${encodeURIComponent(formData.appointmentDate)}&time=${encodeURIComponent(formData.timeSlot)}`;
         } else {
             // Error
             showError('There was an error submitting your request. Please try again.');
