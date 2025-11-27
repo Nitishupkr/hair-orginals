@@ -484,7 +484,7 @@ async function handleFormSubmit(e) {
     };
     
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', GOOGLE_SCRIPT_URL, true);
+xhr.open('POST', '/api/submit', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     
     xhr.onload = function() {
