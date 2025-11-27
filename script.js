@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCalendar();
     setupEventListeners();
     
-    selectedDate = new Date(2025, 10, 26); // Month 10 = November (0-indexed)
+    // Don't set default date anymore
+    selectedDate = null;
     renderCalendar();
     
     initializeConcernCollapsible();
@@ -28,17 +29,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function setupEventListeners() {
     // Real-time validation on all mandatory fields
-    const mandatoryFields = ['name', 'mobile', 'address', 'pincode', 'location'];
+    const mandatoryFields = ['name', 'mobile', 'city', 'pincode', 'location'];
     mandatoryFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
-            field.addEventListener('input', validateForm);
-            field.addEventListener('blur', validateForm);
+            // Clear error when user starts typing
+            field.addEventListener('input', function() {
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                    errorElement.classList.remove('show');
+                }
+                if (this.classList.contains('error')) {
+                    this.classList.remove('error');
+                }
+                validateForm();
+            });
+            // Show error only when user leaves the field
+            field.addEventListener('blur', function() {
+                validateField(fieldId, true);
+            });
         }
     });
 
     // Consent checkbox validation
-    consentCheckbox.addEventListener('change', validateForm);
+    consentCheckbox.addEventListener('change', function() {
+        const errorElement = document.getElementById('consent-error');
+        if (errorElement && this.checked) {
+            errorElement.style.display = 'none';
+            errorElement.classList.remove('show');
+        }
+        validateForm();
+    });
 
     // Form submission
     form.addEventListener('submit', handleFormSubmit);
@@ -54,6 +76,14 @@ function setupEventListeners() {
         if (this.value.length > 10) {
             this.value = this.value.slice(0, 10);
         }
+        const errorElement = document.getElementById('mobile-error');
+        if (errorElement) {
+            errorElement.style.display = 'none';
+            errorElement.classList.remove('show');
+        }
+        if (this.classList.contains('error')) {
+            this.classList.remove('error');
+        }
         validateForm();
     });
 
@@ -63,6 +93,14 @@ function setupEventListeners() {
         this.value = this.value.replace(/[^0-9]/g, '');
         if (this.value.length > 6) {
             this.value = this.value.slice(0, 6);
+        }
+        const errorElement = document.getElementById('pincode-error');
+        if (errorElement) {
+            errorElement.style.display = 'none';
+            errorElement.classList.remove('show');
+        }
+        if (this.classList.contains('error')) {
+            this.classList.remove('error');
         }
         validateForm();
     });
@@ -78,6 +116,11 @@ function setupEventListeners() {
     concernCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             this.parentElement.classList.toggle('checked', this.checked);
+            const errorElement = document.getElementById('concern-error');
+            if (errorElement && document.querySelectorAll('input[name="concern"]:checked').length > 0) {
+                errorElement.style.display = 'none';
+                errorElement.classList.remove('show');
+            }
             validateForm();
         });
     });
@@ -90,60 +133,152 @@ function setupEventListeners() {
             this.classList.add('selected');
             const radio = this.querySelector('input[type="radio"]');
             if (radio) radio.checked = true;
+            const errorElement = document.getElementById('timeslot-error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+                errorElement.classList.remove('show');
+            }
             validateForm();
         });
     });
 }
 
-// Validate entire form and enable/disable submit button
-function validateForm() {
-    // Check all mandatory fields
-    const name = document.getElementById('name').value.trim();
-    const mobile = document.getElementById('mobile').value.trim();
-    const address = document.getElementById('address').value.trim();
-    const pincode = document.getElementById('pincode').value.trim();
-    const location = document.getElementById('location').value.trim();
+// Validate individual field and show error message only when explicitly asked
+function validateField(fieldId, showError = false) {
+    let isValid = true;
+    let errorMsg = '';
+    const errorElement = document.getElementById(`${fieldId}-error`);
+    const inputElement = document.getElementById(fieldId);
     
-    // Check mobile number validity (must be exactly 10 digits)
-    const isMobileValid = mobile.length === 10 && /^[0-9]{10}$/.test(mobile);
-    
-    // Check pincode validity (must be exactly 6 digits)
-    const isPincodeValid = pincode.length === 6 && /^[0-9]{6}$/.test(pincode);
-    
-    // Check at least one concern is selected
-    const concernsSelected = document.querySelectorAll('input[name="concern"]:checked').length > 0;
-    
-    // Check date is selected
-    const dateSelected = selectedDate !== null;
-    
-    // Check time slot is selected
-    const timeSlotSelected = document.querySelector('input[name="timeSlot"]:checked') !== null;
-    
-    // Check consent is checked
-    const consentChecked = consentCheckbox.checked;
-    
-    // Enable submit button only if ALL conditions are met
-    const isFormValid = 
-        name && 
-        isMobileValid && 
-        address && 
-        isPincodeValid && 
-        location && 
-        concernsSelected && 
-        dateSelected && 
-        timeSlotSelected && 
-        consentChecked;
-    
-    submitBtn.disabled = !isFormValid;
-    
-    // Optional: Add visual feedback
-    if (isFormValid) {
-        submitBtn.style.opacity = '1';
-        submitBtn.style.cursor = 'pointer';
-    } else {
-        submitBtn.style.opacity = '0.5';
-        submitBtn.style.cursor = 'not-allowed';
+    switch(fieldId) {
+        case 'name':
+            const name = inputElement.value.trim();
+            if (!name) {
+                isValid = false;
+                errorMsg = 'Please enter your name';
+            }
+            break;
+            
+        case 'mobile':
+            const mobile = inputElement.value.trim();
+            if (!mobile) {
+                isValid = false;
+                errorMsg = 'Please enter your mobile number';
+            } else if (mobile.length !== 10 || !/^[0-9]{10}$/.test(mobile)) {
+                isValid = false;
+                errorMsg = 'Please enter a valid 10-digit mobile number';
+            }
+            break;
+            
+        case 'city':
+            const city = inputElement.value.trim();
+            if (!city) {
+                isValid = false;
+                errorMsg = 'Please enter your city';
+            }
+            break;
+            
+        case 'pincode':
+            const pincode = inputElement.value.trim();
+            if (!pincode) {
+                isValid = false;
+                errorMsg = 'Please enter your pincode';
+            } else if (pincode.length !== 6 || !/^[0-9]{6}$/.test(pincode)) {
+                isValid = false;
+                errorMsg = 'Please enter a valid 6-digit pincode';
+            }
+            break;
+            
+        case 'location':
+            const location = inputElement.value.trim();
+            if (!location) {
+                isValid = false;
+                errorMsg = 'Please enter your location';
+            }
+            break;
+            
+        case 'concern':
+            const concernsSelected = document.querySelectorAll('input[name="concern"]:checked').length > 0;
+            if (!concernsSelected) {
+                isValid = false;
+                errorMsg = 'Please select at least one concern';
+            }
+            break;
+            
+        case 'date':
+            if (!selectedDate) {
+                isValid = false;
+                errorMsg = 'Please select a date';
+            }
+            break;
+            
+        case 'timeslot':
+            const timeSlotSelected = document.querySelector('input[name="timeSlot"]:checked') !== null;
+            if (!timeSlotSelected) {
+                isValid = false;
+                errorMsg = 'Please select a time slot';
+            }
+            break;
+            
+        case 'consent':
+            if (!consentCheckbox.checked) {
+                isValid = false;
+                errorMsg = 'Please accept the consent to proceed';
+            }
+            break;
     }
+    
+    // Show/hide error message ONLY if showError is true
+    if (errorElement && showError) {
+        if (!isValid) {
+            errorElement.textContent = errorMsg;
+            errorElement.style.display = 'block';
+            errorElement.classList.add('show');
+            if (inputElement) {
+                inputElement.classList.add('error');
+            }
+        } else {
+            errorElement.style.display = 'none';
+            errorElement.classList.remove('show');
+            if (inputElement) {
+                inputElement.classList.remove('error');
+            }
+        }
+    }
+    
+    return isValid;
+}
+
+// Validate entire form - Button always stays active
+function validateForm() {
+    // Just check if all fields are valid, but don't disable button
+    const isNameValid = document.getElementById('name').value.trim() !== '';
+    const isMobileValid = document.getElementById('mobile').value.trim().length === 10;
+    const isCityValid = document.getElementById('city').value.trim() !== '';
+    const isPincodeValid = document.getElementById('pincode').value.trim().length === 6;
+    const isLocationValid = document.getElementById('location').value.trim() !== '';
+    const isConcernValid = document.querySelectorAll('input[name="concern"]:checked').length > 0;
+    const isDateValid = selectedDate !== null;
+    const isTimeSlotValid = document.querySelector('input[name="timeSlot"]:checked') !== null;
+    const isConsentValid = consentCheckbox.checked;
+    
+    const isFormValid = 
+        isNameValid && 
+        isMobileValid && 
+        isCityValid && 
+        isPincodeValid && 
+        isLocationValid && 
+        isConcernValid && 
+        isDateValid && 
+        isTimeSlotValid && 
+        isConsentValid;
+    
+    // Button is ALWAYS enabled
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '1';
+    submitBtn.style.cursor = 'pointer';
+    
+    return isFormValid;
 }
 
 function initializeConcernCollapsible() {
@@ -217,7 +352,12 @@ function renderCalendar() {
             const year = parseInt(this.dataset.year);
             selectedDate = new Date(year, month, day);
             
-            // Revalidate form when date is selected
+            // Clear date error when date is selected
+            const errorElement = document.getElementById('date-error');
+            if (errorElement) {
+                errorElement.style.display = 'none';
+                errorElement.classList.remove('show');
+            }
             validateForm();
         });
     });
@@ -242,11 +382,26 @@ function getLocation(e) {
                         if (data.address) {
                             if (data.address.postcode) {
                                 pincodeInput.value = data.address.postcode;
+                                const pincodeError = document.getElementById('pincode-error');
+                                if (pincodeError) {
+                                    pincodeError.style.display = 'none';
+                                    pincodeError.classList.remove('show');
+                                }
                             }
                             if (data.address.city || data.address.town || data.address.village) {
                                 cityInput.value = data.address.city || data.address.town || data.address.village;
+                                const cityError = document.getElementById('city-error');
+                                if (cityError) {
+                                    cityError.style.display = 'none';
+                                    cityError.classList.remove('show');
+                                }
                             }
                             locationInput.value = data.display_name || '';
+                            const locationError = document.getElementById('location-error');
+                            if (locationError) {
+                                locationError.style.display = 'none';
+                                locationError.classList.remove('show');
+                            }
                             
                             // Revalidate after location is filled
                             validateForm();
@@ -272,50 +427,42 @@ async function handleFormSubmit(e) {
     errorMessage.style.display = 'none';
     loadingMessage.style.display = 'none';
     
+    // Validate all fields and show errors for invalid ones
+    let allValid = true;
+    let firstErrorField = null;
+    
+    const fieldsToValidate = ['name', 'mobile', 'city', 'pincode', 'location', 'concern', 'date', 'timeslot', 'consent'];
+    
+    fieldsToValidate.forEach(fieldId => {
+        if (!validateField(fieldId, true)) {
+            allValid = false;
+            if (!firstErrorField) {
+                firstErrorField = fieldId;
+            }
+        }
+    });
+    
+    // If form is not valid, scroll to first error
+    if (!allValid) {
+        const firstError = document.getElementById(`${firstErrorField}-error`);
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+    }
+    
+    // If all valid, proceed with submission
     const name = document.getElementById('name').value.trim();
     const mobile = document.getElementById('mobile').value.trim();
     const address = document.getElementById('address').value.trim();
+    const city = document.getElementById('city').value.trim();
     const pincode = document.getElementById('pincode').value.trim();
     const location = document.getElementById('location').value.trim();
-    
-    if (!name || !mobile || !address || !pincode || !location) {
-        showError('Please fill in all mandatory fields (marked with *)');
-        return;
-    }
-    
-    if (mobile.length !== 10 || !/^[0-9]{10}$/.test(mobile)) {
-        showError('Please enter a valid 10-digit mobile number');
-        return;
-    }
-    
-    if (pincode.length !== 6 || !/^[0-9]{6}$/.test(pincode)) {
-        showError('Please enter a valid 6-digit pincode');
-        return;
-    }
     
     const concerns = Array.from(document.querySelectorAll('input[name="concern"]:checked'))
         .map(cb => cb.value);
     
-    if (concerns.length === 0) {
-        showError('Please select at least one concern');
-        return;
-    }
-    
-    if (!selectedDate) {
-        showError('Please select a date for the home trial');
-        return;
-    }
-    
     const timeSlot = document.querySelector('input[name="timeSlot"]:checked');
-    if (!timeSlot) {
-        showError('Please select a time slot');
-        return;
-    }
-    
-    if (!consentCheckbox.checked) {
-        showError('Please accept the consent to proceed');
-        return;
-    }
     
     submitBtn.disabled = true;
     loadingMessage.style.display = 'block';
@@ -324,7 +471,7 @@ async function handleFormSubmit(e) {
         name: name,
         mobile: mobile,
         address: address,
-        city: document.getElementById('city').value.trim(),
+        city: city,
         pincode: pincode,
         location: location,
         concerns: concerns.join(', '),

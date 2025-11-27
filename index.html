@@ -62,6 +62,35 @@
     }
 }
 
+/* Field error messages */
+.field-error {
+    color: #d32f2f !important;
+    font-size: 11px !important;
+    margin-top: 4px !important;
+    display: none !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+}
+
+.field-error.show {
+    display: block !important;
+}
+
+.form-group input.error,
+.form-group select.error,
+input.error,
+select.error {
+    border: 2px solid #d32f2f !important;
+    border-color: #d32f2f !important;
+}
+
+/* Mobile specific error styling */
+@media (max-width: 600px) {
+    .field-error {
+        font-size: 10px !important;
+    }
+}
+
     .feature-card {
         flex: 1 !important;
         text-align: center !important;
@@ -273,6 +302,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <input type="text" id="name" name="name" placeholder="NAME*" required>
+                        <div class="field-error" id="name-error" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none;">Please enter your name</div>
                     </div>
                     <div class="form-group phone-group">
                         <div class="phone-input">
@@ -280,37 +310,39 @@
                                 <img src="https://flagcdn.com/w40/in.png" alt="India" width="20" height="15">
                                 +91
                             </span>
-                            <!-- IMPROVED: Changed type to tel and added inputmode -->
                             <input type="tel" id="mobile" name="mobile" placeholder="ENTER 10 DIGIT MOBILE NO*" 
                                    pattern="[0-9]{10}" maxlength="10" inputmode="numeric" required>
                         </div>
+                        <div class="field-error" id="mobile-error" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none;">Please enter a valid 10-digit mobile number</div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <input type="text" id="address" name="address" placeholder="ADDRESS*" required>
+                        <input type="text" id="address" name="address" placeholder="ADDRESS">
+                        <div class="field-error" id="address-error" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none;">Please enter your address</div>
                     </div>
                     <div class="form-group">
-                        <input type="text" id="city" name="city" placeholder="CITY">
+                        <input type="text" id="city" name="city" placeholder="CITY*" required>
+                        <div class="field-error" id="city-error" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none;">Please enter your city</div>
                     </div>
                 </div>
 
                 <!-- PINCODE + LOCATION (with embedded button) -->
                 <div class="form-row">
 
-                    <!-- PINCODE FIELD - IMPROVED: Changed to text with pattern -->
+                    <!-- PINCODE FIELD -->
                     <div class="form-group">
                         <input type="text" id="pincode" name="pincode" placeholder="PINCODE*" 
                                maxlength="6" pattern="[0-9]{6}" inputmode="numeric" required>
+                        <div class="field-error" id="pincode-error" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none;">Please enter a valid 6-digit pincode</div>
                     </div>
 
                     <!-- LOCATION FIELD WITH BUTTON INSIDE -->
                     <div class="form-group location-wrapper">
                         <input type="text" id="location" name="location" placeholder="LOCATION*" required>
-
-                        <!-- Small button inside input -->
                         <button type="button" class="location-small-btn">Pick My Location</button>
+                        <div class="field-error" id="location-error" style="color: #d32f2f; font-size: 11px; margin-top: 4px; display: none;">Please enter your location</div>
                     </div>
 
                 </div>
@@ -333,16 +365,16 @@
                                 <input type="checkbox" name="concern" value="thin_hair">
                                 <span>My hair looks thin and lacks volume</span>
                             </label>
-                            <label class="checkbox-label checked">
-                                <input type="checkbox" name="concern" value="less_density" checked>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="concern" value="less_density">
                                 <span>I have less hair density on my crown area</span>
                             </label>
-                            <label class="checkbox-label checked">
-                                <input type="checkbox" name="concern" value="hair_loss" checked>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="concern" value="hair_loss">
                                 <span>I've lost a lot of hair and want full coverage</span>
                             </label>
-                            <label class="checkbox-label checked">
-                                <input type="checkbox" name="concern" value="broad_forehead" checked>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="concern" value="broad_forehead">
                                 <span>My forehead looks broad and I want better front coverage</span>
                             </label>
                             <label class="checkbox-label">
@@ -350,6 +382,7 @@
                                 <span>I am not sure</span>
                             </label>
                         </div>
+                        <div class="field-error" id="concern-error" style="color: #d32f2f; font-size: 11px; margin-top: 8px; display: none;">Please select at least one concern</div>
                     </div>
 
                 </div>
@@ -357,14 +390,12 @@
                 <!-- Calendar Section -->
                 <div class="calendar-section">
                     <div class="calendar-header">
-                        <!-- FIXED: Corrected month values (0-indexed) -->
                         <select id="month" name="month" class="month-select">
                             <option value="8">September</option>
                             <option value="9">October</option>
                             <option value="10" selected>November</option>
                             <option value="11">December</option>
                         </select>
-                        <!-- IMPROVED: Added 2024 option -->
                         <select id="year" name="year" class="year-select">
                             <option value="2024">2024</option>
                             <option value="2025" selected>2025</option>
@@ -386,6 +417,7 @@
                             <!-- Calendar dates will be generated by JavaScript -->
                         </div>
                     </div>
+                    <div class="field-error" id="date-error" style="color: #d32f2f; font-size: 11px; margin-top: 8px; display: none;">Please select a date</div>
                 </div>
 
                 <!-- Time Slot Section -->
@@ -396,8 +428,8 @@
                             <input type="radio" name="timeSlot" value="10AM - 1PM" required>
                             <span>10AM - 1PM</span>
                         </label>
-                        <label class="time-slot selected">
-                            <input type="radio" name="timeSlot" value="1PM - 4PM" checked required>
+                        <label class="time-slot">
+                            <input type="radio" name="timeSlot" value="1PM - 4PM" required>
                             <span>1PM - 4PM</span>
                         </label>
                         <label class="time-slot">
@@ -405,6 +437,7 @@
                             <span>4PM - 7PM</span>
                         </label>
                     </div>
+                    <div class="field-error" id="timeslot-error" style="color: #d32f2f; font-size: 11px; margin-top: 8px; display: none;">Please select a time slot</div>
                 </div>
 
                 <!-- Consent Checkbox -->
@@ -413,18 +446,17 @@
                         <input type="checkbox" id="consent" name="consent" required>
                         <span>I authorize HairOriginals to contact me for consultation, booking, service updates and customer support. We respect your time, hence no spam!</span>
                     </label>
+                    <div class="field-error" id="consent-error" style="color: #d32f2f; font-size: 11px; margin-top: 8px; display: none;">Please accept the consent to proceed</div>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" id="submitBtn" class="submit-btn" disabled>SUBMIT</button>
+                <button type="submit" id="submitBtn" class="submit-btn">SUBMIT</button>
                 
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
                 <div id="loadingMessage" class="loading-message" style="display: none;">Submitting your request...</div>
             </form>
         </div>
     </section>
-
-
 
     <script src="script.js"></script>
 </body>
