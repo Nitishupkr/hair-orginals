@@ -12,6 +12,8 @@ const monthSelect = document.getElementById('month');
 const yearSelect = document.getElementById('year');
 
 let selectedDate = null;
+let userLatitude = null;
+let userLongitude = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeCalendar();
@@ -372,6 +374,10 @@ function getLocation(e) {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 
+                // Store latitude and longitude
+                userLatitude = lat;
+                userLongitude = lon;
+                
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
                     .then(response => response.json())
                     .then(data => {
@@ -396,7 +402,12 @@ function getLocation(e) {
                                     cityError.classList.remove('show');
                                 }
                             }
-                            locationInput.value = data.display_name || '';
+                            
+                            // Create short address with coordinates
+                            const shortAddress = getShortAddress(data.address);
+                            const locationWithCoords = `${shortAddress} (${lat.toFixed(6)}, ${lon.toFixed(6)})`;
+                            
+                            locationInput.value = locationWithCoords;
                             const locationError = document.getElementById('location-error');
                             if (locationError) {
                                 locationError.style.display = 'none';
@@ -419,6 +430,40 @@ function getLocation(e) {
     } else {
         alert('Geolocation is not supported by your browser.');
     }
+}
+
+// Helper function to create a short, readable address
+function getShortAddress(address) {
+    const parts = [];
+    
+    // Add road/street if available
+    if (address.road) {
+        parts.push(address.road);
+    }
+    
+    // Add suburb or neighbourhood
+    if (address.suburb) {
+        parts.push(address.suburb);
+    } else if (address.neighbourhood) {
+        parts.push(address.neighbourhood);
+    }
+    
+    // Add city/town/village
+    if (address.city) {
+        parts.push(address.city);
+    } else if (address.town) {
+        parts.push(address.town);
+    } else if (address.village) {
+        parts.push(address.village);
+    }
+    
+    // If no parts found, use display_name as fallback (first 50 chars)
+    if (parts.length === 0 && address.display_name) {
+        return address.display_name.substring(0, 50);
+    }
+    
+    // Join the parts with comma
+    return parts.join(', ');
 }
 
 async function handleFormSubmit(e) {
@@ -474,6 +519,8 @@ async function handleFormSubmit(e) {
         city: city,
         pincode: pincode,
         location: location,
+        latitude: userLatitude || '',
+        longitude: userLongitude || '',
         concerns: concerns.join(', '),
         appointmentDate: formatDate(selectedDate),
         timeSlot: timeSlot.value,
@@ -484,7 +531,7 @@ async function handleFormSubmit(e) {
     };
     
     const xhr = new XMLHttpRequest();
-xhr.open('POST', '/api/submit', true);
+    xhr.open('POST', '/api/submit', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     
     xhr.onload = function() {
