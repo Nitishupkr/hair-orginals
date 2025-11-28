@@ -367,70 +367,26 @@ function renderCalendar() {
 
 function getLocation(e) {
     e.preventDefault();
-    
+
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                
-                // Store latitude and longitude
-                userLatitude = lat;
-                userLongitude = lon;
-                
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const locationInput = document.getElementById('location');
-                        const pincodeInput = document.getElementById('pincode');
-                        const cityInput = document.getElementById('city');
-                        
-                        if (data.address) {
-                            if (data.address.postcode) {
-                                pincodeInput.value = data.address.postcode;
-                                const pincodeError = document.getElementById('pincode-error');
-                                if (pincodeError) {
-                                    pincodeError.style.display = 'none';
-                                    pincodeError.classList.remove('show');
-                                }
-                            }
-                            if (data.address.city || data.address.town || data.address.village) {
-                                cityInput.value = data.address.city || data.address.town || data.address.village;
-                                const cityError = document.getElementById('city-error');
-                                if (cityError) {
-                                    cityError.style.display = 'none';
-                                    cityError.classList.remove('show');
-                                }
-                            }
-                            
-                            // Create short address with coordinates
-                            const shortAddress = getShortAddress(data.address);
-                            const locationWithCoords = `${shortAddress} (${lat.toFixed(6)}, ${lon.toFixed(6)})`;
-                            
-                            locationInput.value = locationWithCoords;
-                            const locationError = document.getElementById('location-error');
-                            if (locationError) {
-                                locationError.style.display = 'none';
-                                locationError.classList.remove('show');
-                            }
-                            
-                            // Revalidate after location is filled
-                            validateForm();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Geocoding error:', error);
-                        alert('Could not fetch location details. Please enter manually.');
-                    });
-            },
-            error => {
-                alert('Unable to retrieve your location. Please enter manually.');
-            }
-        );
+        navigator.geolocation.getCurrentPosition(position => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            userLatitude = lat;
+            userLongitude = lon;
+
+            // Just fill coordinates, no API
+            document.getElementById('location').value = `${lat}, ${lon}`;
+
+        }, () => {
+            alert('Unable to get location. Please enter manually.');
+        });
     } else {
-        alert('Geolocation is not supported by your browser.');
+        alert('Geolocation not supported.');
     }
 }
+
 
 // Helper function to create a short, readable address
 function getShortAddress(address) {
